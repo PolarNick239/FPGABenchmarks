@@ -10,7 +10,7 @@ using std::string;
 
 std::vector<cl_device_id> cl::getDevicesIds(Platform_ptr platform, DeviceType deviceTypeMask) {
     cl_uint devices_num;
-    CHECKED(clGetDeviceIDs(0, deviceTypeMask, 0, NULL, &devices_num));
+    CHECKED(clGetDeviceIDs(platform->platform_id, deviceTypeMask, 0, NULL, &devices_num));
 
     vector<cl_device_id> devices_ids(devices_num);
     CHECKED(clGetDeviceIDs(platform->platform_id, deviceTypeMask, devices_num, devices_ids.data(), &devices_num));

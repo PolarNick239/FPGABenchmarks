@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-project(utils)
+project(cl_utils)
 
 find_package(OpenCL REQUIRED)
-
-set(PROJECT_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
-set(PROJECT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(HEADERS
         include/cl/common.h
@@ -19,6 +16,6 @@ set(SOURCES
         src/cl/Device.cpp
         )
 
-add_library(utils ${SOURCES} ${HEADERS})
-target_link_libraries(utils ${OpenCL_LIBRARY})
-target_include_directories(utils PUBLIC include)
+add_library(cl_utils ${SOURCES} ${HEADERS})
+target_link_libraries(cl_utils ${OpenCL_LIBRARY})
+target_include_directories(cl_utils PUBLIC include)
