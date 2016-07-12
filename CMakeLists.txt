@@ -9,4 +9,4 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 add_subdirectory(libs)
-
+add_subdirectory(benchmarks)
