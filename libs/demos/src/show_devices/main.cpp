@@ -25,9 +25,10 @@ int main() {
             std::cout << std::endl;
 
             auto devices_ids = cl::getDevicesIds(platform);
-            for (auto device_id : devices_ids) {
+            for (size_t j = 0; j < devices_ids.size(); j++) {
+                auto device_id = devices_ids[j];
                 auto device = cl::createDevice(platform, device_id);
-                std::cout << "      Device " << i + 1 << "/" << platform_ids.size() << ":" << std::endl;
+                std::cout << "      Device " << j + 1 << "/" << devices_ids.size() << ":" << std::endl;
                 if (device) {
                     std::cout << "        Name:              " << device->name << std::endl;
                     std::cout << "        Vendor:            " << device->vendor << std::endl;
