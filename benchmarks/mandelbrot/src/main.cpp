@@ -5,6 +5,8 @@ using images::Image;
 using images::ImageWindow;
 
 int main() {
+    const int MAX_ITERATIONS = 1024;
+
     size_t width = 1024;
     size_t height = 768;
     Image image(width, height, 3);
@@ -12,7 +14,26 @@ int main() {
     ImageWindow window("Mandelbrot");
 
     do {
-        //TODO implement Mandelbrot rendering
+        for (size_t py = 0; py < height; py++) {
+            for (size_t px = 0; px < width; px++) {
+                int iteration;
+                float x0 = 2.0f * (((float) px) / width - 0.5f);
+                float y0 = 2.0f * (((float) py) / width - 0.5f);
+                float x = 0.0f;
+                float y = 0.0f;
+                for (iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
+                    float xn = x * x - y * y + x0;
+                    y = 2 * x * y + y0;
+                    x = xn;
+                    if (x * x + y * y > 10000.0f) {
+                        break;
+                    }
+                }
+                for (int c = 0; c < 3; c++) {
+                    image(py, px, c) = (unsigned char) (255 * iteration / MAX_ITERATIONS);
+                }
+            }
+        }
 
         window.display(image);
 
