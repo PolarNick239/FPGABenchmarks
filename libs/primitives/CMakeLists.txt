@@ -10,5 +10,5 @@ set(SOURCES
         src/vector2.cpp
         )
 
-add_library(primitives ${HEADERS} ${SOURCES})
-target_include_directories(primitives PUBLIC include)
+add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+target_include_directories(${PROJECT_NAME} PUBLIC include)

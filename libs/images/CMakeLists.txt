@@ -15,7 +15,7 @@ set(SOURCES
         src/images.cpp
         )
 
-add_library(images ${SOURCES} ${HEADERS})
+add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
-target_link_libraries(images ${CMAKE_THREAD_LIBS_INIT} ${X11_LIBRARIES})
-target_include_directories(images PUBLIC include)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT} ${X11_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PUBLIC include)

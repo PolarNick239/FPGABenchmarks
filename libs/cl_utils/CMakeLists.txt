@@ -16,7 +16,7 @@ set(SOURCES
         src/cl/Device.cpp
         )
 
-add_library(cl_utils ${SOURCES} ${HEADERS})
+add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
-target_link_libraries(cl_utils ${OpenCL_LIBRARY})
-target_include_directories(cl_utils PUBLIC include)
+target_link_libraries(${PROJECT_NAME} ${OpenCL_LIBRARY})
+target_include_directories(${PROJECT_NAME} PUBLIC include)
