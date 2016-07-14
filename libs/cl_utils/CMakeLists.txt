@@ -17,5 +17,6 @@ set(SOURCES
         )
 
 add_library(cl_utils ${SOURCES} ${HEADERS})
+
 target_link_libraries(cl_utils ${OpenCL_LIBRARY})
 target_include_directories(cl_utils PUBLIC include)

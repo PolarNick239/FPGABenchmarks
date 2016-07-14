@@ -1,49 +1,42 @@
 #include <iostream>
-#include "images.h"
+
+#include "mandelbrot.h"
 
 using images::Image;
 using images::ImageWindow;
+using primitives::Vector2f;
 
 int main() {
-    const int MAX_ITERATIONS = 1024;
-
     size_t width = 1024;
     size_t height = 768;
     Image<unsigned char> image(width, height, 3);
+    Image<unsigned short> iterations(width, height, 1);
 
     ImageWindow window("Mandelbrot");
+    window.display(image);
+
+    MandelbrotProcessorCPU processor;
 
     do {
-        for (size_t py = 0; py < height; py++) {
-            for (size_t px = 0; px < width; px++) {
-                int iteration;
-                float x0 = 2.0f * (((float) px) / width - 0.5f);
-                float y0 = 2.0f * (((float) py) / width - 0.5f);
-                float x = 0.0f;
-                float y = 0.0f;
-                for (iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
-                    float xn = x * x - y * y + x0;
-                    y = 2 * x * y + y0;
-                    x = xn;
-                    if (x * x + y * y > 10000.0f) {
-                        break;
-                    }
-                }
-                for (int c = 0; c < 3; c++) {
-                    image(py, px, c) = (unsigned char) (255 * iteration / MAX_ITERATIONS);
+        if (window.isResized()) {
+            width = window.width();
+            height = window.height();
+            image = Image<unsigned char>(width, height, 3);
+            iterations = Image<unsigned short>(width, height, 1);
+            window.resize();
+        }
+
+        processor.process(Vector2f(-1.0f, -1.0f), Vector2f(1.0f, 1.0f), iterations);
+
+        for (size_t y = 0; y < height; y++) {
+            for (size_t x = 0; x < width; x++) {
+                for (size_t c = 0; c < 3; c++) {
+                    image(y, x, c) = (unsigned char) (255 * (((float) iterations(y, x, 0)) / MandelbrotProcessor::MAX_ITERATIONS));
                 }
             }
         }
 
         window.display(image);
-
-        if (window.isResized()) {
-            width = window.width();
-            height = window.height();
-            image = Image<unsigned char>(width, height, 3);
-            window.resize();
-        }
-
         window.wait(20);
     } while (!window.isClosed());
     return 0;
