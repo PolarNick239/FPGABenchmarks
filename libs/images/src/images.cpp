@@ -9,10 +9,10 @@ using namespace images;
 using namespace cimg_library;
 
 template <typename T>
-Image<T>::Image(size_t width, size_t height, int cn, const std::shared_ptr<T> &data) : Image(width, height, cn, data, 0, width * cn) {}
+Image<T>::Image(size_t width, size_t height, size_t cn, const std::shared_ptr<T> &data) : Image(width, height, cn, data, 0, width * cn) {}
 
 template <typename T>
-Image<T>::Image(size_t width, size_t height, int cn, const std::shared_ptr<T> &data, size_t offset, ptrdiff_t stride)
+Image<T>::Image(size_t width, size_t height, size_t cn, const std::shared_ptr<T> &data, size_t offset, ptrdiff_t stride)
         : width(width), height(height), cn(cn), offset(offset), stride(stride), data(data) {
     if (!this->data) {
         this->data = std::shared_ptr<T>(new T[width * height * cn]);
@@ -42,7 +42,7 @@ T& Image<T>::operator()(size_t row, size_t col) {
 }
 
 template <typename T>
-T& Image<T>::operator()(size_t row, size_t col, int c) {
+T& Image<T>::operator()(size_t row, size_t col, size_t c) {
     // TODO: check that maybe if inlined in header - performance is better
     assert (c >= 0 && c < cn);
     return data.get()[offset + row * stride + col * cn + c];
@@ -57,7 +57,7 @@ T Image<T>::operator()(size_t row, size_t col) const {
 }
 
 template <typename T>
-T Image<T>::operator()(size_t row, size_t col, int c) const {
+T Image<T>::operator()(size_t row, size_t col, size_t c) const {
     // TODO: check that maybe if inlined in header - performance is better
     assert (c >= 0 && c < cn);
     return data.get()[offset + row * stride + col * cn + c];
@@ -65,9 +65,10 @@ T Image<T>::operator()(size_t row, size_t col, int c) const {
 
 template <typename T>
 void Image<T>::fill(T value) {
+    assert (cn == 1);
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
-            for (int c = 0; c < cn; c++) {
+            for (size_t c = 0; c < cn; c++) {
                 this->operator()(y, x, c) = value;
             }
         }
@@ -78,8 +79,41 @@ template <typename T>
 void Image<T>::fill(T value[]) {
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
-            for (int c = 0; c < cn; c++) {
-                this->operator()(y, x, c) = value[c];
+            for (size_t c = 0; c < cn; c++) {
+                this->operator()(y, x, c) = value[c];  // TODO: compare performance if accurately increasing pointer
+            }
+        }
+    }
+}
+
+template <typename T>
+void Image<T>::replace(T a, T b) {
+    assert (cn == 1);
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            if (this->operator()(y, x) == a) {
+                this->operator()(y, x) = b;
+            }
+        }
+    }
+}
+
+template <typename T>
+void Image<T>::replace(T a[], T b[]) {
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            bool match = true;
+            for (size_t c = 0; c < cn; c++) {
+                if (this->operator()(y, x, c) != a[c]) {
+                    match = false;
+                    break;
+                }
+            }
+
+            if (match) {
+                for (size_t c = 0; c < cn; c++) {
+                    this->operator()(y, x, c) = b[c];
+                }
             }
         }
     }
@@ -100,7 +134,7 @@ class CImgWrapper {
 public:
     CImg<T> img;
 
-    CImgWrapper(size_t width, size_t height, int cn) : img(width, height, 1, cn) {}
+    CImgWrapper(size_t width, size_t height, size_t cn) : img(width, height, 1, cn) {}
 };
 
 class CImgDisplayWrapper {
@@ -125,7 +159,7 @@ void ImageWindow::display(Image<T> image) {
     CImg<T> img(image.width, image.height, 1, image.cn);
 
     T* dst = img.data();
-    for (int c = 0; c < image.cn; c++) {
+    for (size_t c = 0; c < image.cn; c++) {
         T* src = image.ptr() + c;
         for (size_t y = 0; y < image.height; y++) {
             for (size_t x = 0; x < image.width; x++) {
@@ -172,4 +206,6 @@ size_t ImageWindow::height() {
 
 
 template void ImageWindow::display<unsigned char>(Image<unsigned char> image);
+template void ImageWindow::display<unsigned short>(Image<unsigned short> image);
 template class Image<unsigned char>;
+template class Image<unsigned short>;

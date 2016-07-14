@@ -16,5 +16,6 @@ set(SOURCES
         )
 
 add_library(images ${SOURCES} ${HEADERS})
+
 target_link_libraries(images ${CMAKE_THREAD_LIBS_INIT} ${X11_LIBRARIES})
 target_include_directories(images PUBLIC include)

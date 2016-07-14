@@ -1,3 +1,5 @@
+#pragma once
+
 #include <memory>
 #include <cstddef>
 
@@ -38,20 +40,22 @@ namespace images {
     public:
         size_t width;
         size_t height;
-        int cn;
+        size_t cn;
 
-        Image(size_t width, size_t height, int cn, const std::shared_ptr<T> &data=nullptr);
-        Image(size_t width, size_t height, int cn, const std::shared_ptr<T> &data, size_t offset, ptrdiff_t stride);
+        Image(size_t width, size_t height, size_t cn, const std::shared_ptr<T> &data=nullptr);
+        Image(size_t width, size_t height, size_t cn, const std::shared_ptr<T> &data, size_t offset, ptrdiff_t stride);
         Image(const Image &image);
 
         T operator()(size_t row, size_t col) const;
-        T operator()(size_t row, size_t col, int c) const;
+        T operator()(size_t row, size_t col, size_t c) const;
         T& operator()(size_t row, size_t col);
-        T& operator()(size_t row, size_t col, int c);
+        T& operator()(size_t row, size_t col, size_t c);
         Image copy() const;
 
         void fill(T value);
         void fill(T value[]);
+        void replace(T a, T b);
+        void replace(T a[], T b[]);
 
         ImageWindow show(const char* title);
 
