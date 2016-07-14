@@ -1,11 +1,14 @@
 #include <memory>
 #include <cstddef>
 
-class CImg8U;
-class CImgDisplay8U;
+template <typename T>
+class CImgWrapper;
+
+class CImgDisplayWrapper;
 
 namespace images {
 
+    template <typename T>
     class Image;
 
     class ImageWindow {
@@ -13,7 +16,8 @@ namespace images {
         ImageWindow(std::string title);
         ~ImageWindow();
 
-        void display(Image image);
+        template<typename T>
+        void display(Image<T> image);
         void resize();
         void wait(unsigned int milliseconds);
         void setTitle(std::string title);
@@ -25,38 +29,39 @@ namespace images {
         size_t height();
 
     protected:
-        CImgDisplay8U* cimg_display;
+        CImgDisplayWrapper* cimg_display;
         std::string title;
     };
 
+    template <typename T>
     class Image {
     public:
         size_t width;
         size_t height;
         int cn;
 
-        Image(size_t width, size_t height, int cn, const std::shared_ptr<unsigned char> &data=nullptr);
-        Image(size_t width, size_t height, int cn, const std::shared_ptr<unsigned char> &data, size_t offset, ptrdiff_t stride);
+        Image(size_t width, size_t height, int cn, const std::shared_ptr<T> &data=nullptr);
+        Image(size_t width, size_t height, int cn, const std::shared_ptr<T> &data, size_t offset, ptrdiff_t stride);
         Image(const Image &image);
 
-        unsigned char operator()(size_t row, size_t col) const;
-        unsigned char operator()(size_t row, size_t col, int c) const;
-        unsigned char& operator()(size_t row, size_t col);
-        unsigned char& operator()(size_t row, size_t col, int c);
+        T operator()(size_t row, size_t col) const;
+        T operator()(size_t row, size_t col, int c) const;
+        T& operator()(size_t row, size_t col);
+        T& operator()(size_t row, size_t col, int c);
         Image copy() const;
 
-        void fill(unsigned char value);
-        void fill(unsigned char value[]);
+        void fill(T value);
+        void fill(T value[]);
 
         ImageWindow show(const char* title);
 
-        unsigned char* ptr() { return data.get(); }
+        T* ptr() { return data.get(); }
 
     protected:
         size_t offset;
         ptrdiff_t stride;
 
-        std::shared_ptr<unsigned char> data;
+        std::shared_ptr<T> data;
     };
 
 }

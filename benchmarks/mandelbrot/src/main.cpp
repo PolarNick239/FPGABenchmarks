@@ -9,7 +9,7 @@ int main() {
 
     size_t width = 1024;
     size_t height = 768;
-    Image image(width, height, 3);
+    Image<unsigned char> image(width, height, 3);
 
     ImageWindow window("Mandelbrot");
 
@@ -40,7 +40,7 @@ int main() {
         if (window.isResized()) {
             width = window.width();
             height = window.height();
-            image = Image(width, height, 3);
+            image = Image<unsigned char>(width, height, 3);
             window.resize();
         }
 
