@@ -21,3 +21,17 @@ public:
                          images::Image<unsigned short>& iterations) override;
 
 };
+
+class MandelbrotProcessorSingleThreaded : public MandelbrotProcessor {
+public:
+
+    MandelbrotProcessorSingleThreaded(MandelbrotProcessor& processor);
+
+    virtual void process(primitives::Vector2f from, primitives::Vector2f to,
+                         images::Image<unsigned short>& iterations) override;
+
+protected:
+
+    MandelbrotProcessor& processor;
+
+};

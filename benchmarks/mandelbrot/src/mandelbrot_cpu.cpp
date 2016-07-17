@@ -13,6 +13,8 @@ void MandelbrotProcessorCPU::process(Vector2f from, Vector2f to,
 
     size_t width = iterations.width;
     size_t height = iterations.height;
+
+    #pragma omp parallel for
     for (size_t py = 0; py < height; py++) {
         for (size_t px = 0; px < width; px++) {
             float x0 = from.x() + (to.x() - from.x()) * px / width;
