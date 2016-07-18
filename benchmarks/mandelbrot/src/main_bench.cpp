@@ -15,7 +15,7 @@ using primitives::Vector2f;
 
 
 int main() {
-    int iters_number = 1;
+    int iters_number = 3;
     size_t width = 512;
     size_t height = 512;
 
@@ -23,14 +23,18 @@ int main() {
 
     vector<pair<string, MandelbrotProcessor&>> processors;
 
+    MandelbrotProcessorCPU_SSE cpu_sse;
+    MandelbrotProcessorSingleThreaded cpu_sse_single(cpu_sse);
     MandelbrotProcessorCPU cpu;
     MandelbrotProcessorSingleThreaded cpu_single(cpu);
 
     string threads_suffix = string(" (") + to_string(omp_get_max_threads()) + " threads)\t\t";
     string single_thread_suffix(" (single thread)\t");
 
-    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU\t") + threads_suffix, cpu));
-    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU\t") + single_thread_suffix, cpu_single));
+    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU SSE\t") + threads_suffix, cpu_sse));
+    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU SSE\t") + single_thread_suffix, cpu_sse_single));
+    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU\t\t") + threads_suffix, cpu));
+    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU\t\t") + single_thread_suffix, cpu_single));
 
     for (size_t i = 0; i < processors.size(); i++) {
         string label = processors[i].first;
@@ -45,7 +49,7 @@ int main() {
             best_result = std::min(best_result, timer.elapsed<milliseconds>());
         }
 
-        std::cout << label << ":\t" << best_result << " ms" << std::endl;
+        std::cout << label << "\t" << best_result << " ms" << std::endl;
     }
     return 0;
 }

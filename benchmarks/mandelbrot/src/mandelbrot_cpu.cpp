@@ -14,11 +14,15 @@ void MandelbrotProcessorCPU::process(Vector2f from, Vector2f to,
     size_t width = iterations.width;
     size_t height = iterations.height;
 
+    float x_step = (to.x() - from.x()) / width;
+    float y_step = (to.y() - from.y()) / height;
+
     #pragma omp parallel for
     for (size_t py = 0; py < height; py++) {
+        float y0 = from.y() + y_step * py;
+
         for (size_t px = 0; px < width; px++) {
-            float x0 = from.x() + (to.x() - from.x()) * px / width;
-            float y0 = from.y() + (to.y() - from.y()) * py / height;
+            float x0 = from.x() + x_step * px;
 
             unsigned short iteration;
             float x = 0.0f;

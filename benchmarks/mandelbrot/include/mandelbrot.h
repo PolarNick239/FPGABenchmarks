@@ -22,6 +22,14 @@ public:
 
 };
 
+class MandelbrotProcessorCPU_SSE : public MandelbrotProcessor {
+public:
+
+    virtual void process(primitives::Vector2f from, primitives::Vector2f to,
+                         images::Image<unsigned short>& iterations) override;
+
+};
+
 class MandelbrotProcessorSingleThreaded : public MandelbrotProcessor {
 public:
 
