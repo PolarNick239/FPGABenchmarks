@@ -27,7 +27,7 @@ void MandelbrotProcessorCPU_SSE::process(Vector2f from, Vector2f to,
 
         for (size_t px = 0; px < iterations.width / 4 * 4; px += 4) {
             float pxf = (float) px;
-            __m128 pxs_deltas128 = _mm_set_ps(0.0f, 1.0f, 2.0f, 3.0f);
+            __m128 pxs_deltas128 = _mm_mul_ps(_mm_set_ps(0.0f, 1.0f, 2.0f, 3.0f), _mm_set1_ps(x_step));
             __m128 xs0 = _mm_add_ps(_mm_set1_ps(from.x()), _mm_add_ps(_mm_set1_ps(x_step * pxf), pxs_deltas128));    // from.x() + x_step * px
 
             unsigned short iteration;
@@ -36,9 +36,10 @@ void MandelbrotProcessorCPU_SSE::process(Vector2f from, Vector2f to,
             __m128 xs = _mm_set1_ps(0.0f);
             __m128 ys = _mm_set1_ps(0.0f);
             for (iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
-                __m128 xsn = _mm_add_ps(_mm_sub_ps(_mm_mul_ps(xs, xs), _mm_mul_ps(ys, ys)), xs0);   // xn = x * x - y * y + x0;
-                ys = _mm_add_ps(_mm_mul_ps(_mm_mul_ps(_mm_set1_ps(2.0f), xs), ys), _mm_set1_ps(y0));             // y = 2 * x * y + y0;
-                xs = xsn;
+                __m128 xsn = _mm_add_ps(_mm_sub_ps(_mm_mul_ps(xs, xs), _mm_mul_ps(ys, ys)), xs0);               // xn = x * x - y * y + x0;
+                __m128 ysn = _mm_add_ps(_mm_mul_ps(_mm_mul_ps(_mm_set1_ps(2.0f), xs), ys), _mm_set1_ps(y0));    // yn = 2 * x * y + y0;
+                xs = _mm_add_ps(_mm_andnot_ps((__m128) maskAll, xsn), _mm_and_ps((__m128) maskAll, xs));
+                ys = _mm_add_ps(_mm_andnot_ps((__m128) maskAll, ysn), _mm_and_ps((__m128) maskAll, ys));
 
                 maskAll = _mm_or_si128(_mm_castps_si128(_mm_cmpge_ps(_mm_add_ps(_mm_mul_ps(xs, xs), _mm_mul_ps(ys, ys)), _mm_set1_ps(INFINITY))), maskAll);
                 iters = _mm_add_epi16(iters, _mm_andnot_si128(maskAll, _mm_set1_epi16(1)));
@@ -47,7 +48,7 @@ void MandelbrotProcessorCPU_SSE::process(Vector2f from, Vector2f to,
                     break;
                 }
             }
-            iters = _mm_shuffle_epi8(iters, _mm_setr_epi8(0, 1, 4, 5, 8, 9, 12, 13, -1, -1, -1, -1, -1, -1, -1, -1));
+            iters = _mm_shuffle_epi8(iters, _mm_setr_epi8(12, 13, 8, 9, 4, 5, 0, 1, -1, -1, -1, -1, -1, -1, -1, -1));
             _mm_storel_epi64((__m128i *) &iterations(py, px), iters);
         }
 

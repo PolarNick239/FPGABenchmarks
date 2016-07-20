@@ -16,8 +16,8 @@ using primitives::Vector2f;
 
 int main() {
     int iters_number = 3;
-    size_t width = 512;
-    size_t height = 512;
+    size_t width = 1024;
+    size_t height = 1024;
 
     Image<unsigned short> iterations(width, height, 1);
 
