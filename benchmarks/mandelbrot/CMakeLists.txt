@@ -9,6 +9,7 @@ set(HEADERS
 set(SOURCES
         src/mandelbrot_cpu.cpp
         src/mandelbrot_cpu_sse.cpp
+        src/mandelbrot_cpu_avx.cpp
         src/mandelbrot_single_thread.cpp
         )
 

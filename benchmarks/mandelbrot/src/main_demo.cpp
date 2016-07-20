@@ -15,7 +15,7 @@ int main() {
     ImageWindow window("Mandelbrot");
     window.display(image);
 
-    MandelbrotProcessorCPU_SSE processor;
+    MandelbrotProcessorCPU_AVX processor;
 
     do {
         if (window.isResized()) {
