@@ -35,12 +35,12 @@ void MandelbrotProcessorCPU_AVX::process(Vector2f from, Vector2f to,
             __m256 xs = _mm256_set1_ps(0.0f);
             __m256 ys = _mm256_set1_ps(0.0f);
             for (iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
-                __m256 xsn = _mm256_fmadd_ps(xs, xs, _mm256_fnmadd_ps(ys, ys, xs0));                            // xn = x * x + (- y * y + x0);
-                __m256 ysn = _mm256_fmadd_ps(_mm256_mul_ps(_mm256_set1_ps(2.0f), xs), ys, _mm256_set1_ps(y0));  // yn = (2 * x) * y + y0;
+                __m256 xsn = _mm256_add_ps(_mm256_sub_ps(_mm256_mul_ps(xs, xs), _mm256_mul_ps(ys, ys)), xs0);               // xn = x * x - y * y + x0;
+                __m256 ysn = _mm256_add_ps(_mm256_mul_ps(_mm256_mul_ps(_mm256_set1_ps(2.0f), xs), ys), _mm256_set1_ps(y0)); // yn = 2 * x * y + y0;
                 xs = _mm256_add_ps(_mm256_andnot_ps((__m256) maskAll, xsn), _mm256_and_ps((__m256) maskAll, xs));
                 ys = _mm256_add_ps(_mm256_andnot_ps((__m256) maskAll, ysn), _mm256_and_ps((__m256) maskAll, ys));
 
-                maskAll = (__m256i) _mm256_or_ps(_mm256_cmp_ps(_mm256_fmadd_ps(xs, xs, _mm256_mul_ps(ys, ys)), _mm256_set1_ps(INFINITY), _CMP_GT_OS), (__m256) maskAll);
+                maskAll = (__m256i) _mm256_or_ps(_mm256_cmp_ps(_mm256_add_ps(_mm256_mul_ps(xs, xs), _mm256_mul_ps(ys, ys)), _mm256_set1_ps(INFINITY), _CMP_GT_OS), (__m256) maskAll);
                 iters = _mm256_add_epi16(iters, _mm256_andnot_si256(maskAll, _mm256_set1_epi16(1)));
                 int mask = _mm256_movemask_epi8(maskAll);
                 if (mask == (int) 0xffffffff) {
