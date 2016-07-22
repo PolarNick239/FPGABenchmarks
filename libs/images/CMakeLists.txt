@@ -7,6 +7,13 @@ project(images)
 find_package(Threads REQUIRED)
 find_package(X11 REQUIRED)
 
+if (NOT EXISTS "${CMAKE_SOURCE_DIR}/thirdparty/CImg/CImg.h")
+    message(SEND_ERROR "CImg library submodule was not downloaded! Please, execute:
+        git submodule update --init")
+endif()
+
+include_directories(${CMAKE_SOURCE_DIR}/thirdparty/CImg)
+
 set(HEADERS
         include/images.h
         )
