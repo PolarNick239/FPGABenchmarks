@@ -35,10 +35,10 @@ int main() {
 
     processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU AVX2\t") + threads_suffix, cpu_avx));
     processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU AVX2\t") + single_thread_suffix, cpu_avx_single));
-    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU SSE\t\t") + threads_suffix, cpu_sse));
-    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU SSE\t\t") + single_thread_suffix, cpu_sse_single));
-    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU\t\t\t") + threads_suffix, cpu));
-    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU\t\t\t") + single_thread_suffix, cpu_single));
+    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU SSE \t") + threads_suffix, cpu_sse));
+    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU SSE \t") + single_thread_suffix, cpu_sse_single));
+    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU     \t") + threads_suffix, cpu));
+    processors.push_back(pair<string, MandelbrotProcessor&>(string("CPU     \t") + single_thread_suffix, cpu_single));
 
     for (size_t i = 0; i < processors.size(); i++) {
         string label = processors[i].first;
