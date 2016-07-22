@@ -3,9 +3,18 @@
 #include <cassert>
 #include <limits>
 #include <immintrin.h>
+#include <cpuinfo.h>
 
 using images::Image;
 using primitives::Vector2f;
+
+bool MandelbrotProcessorCPU_AVX::available() {
+    return cpuinfo.has_avx() && cpuinfo.has_avx2();
+}
+
+bool MandelbrotProcessorCPU_AVX::isAvailable() {
+    return MandelbrotProcessorCPU_AVX::available();
+}
 
 void MandelbrotProcessorCPU_AVX::process(Vector2f from, Vector2f to,
                                          Image<unsigned short>& iterations) {

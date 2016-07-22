@@ -6,6 +6,10 @@
 using images::Image;
 using primitives::Vector2f;
 
+bool MandelbrotProcessorCPU::isAvailable() {
+    return true;
+}
+
 void MandelbrotProcessorCPU::process(Vector2f from, Vector2f to,
                                      Image<unsigned short>& iterations) {
     assert (MAX_ITERATIONS < std::numeric_limits<unsigned short>::max());

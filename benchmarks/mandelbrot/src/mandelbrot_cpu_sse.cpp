@@ -4,9 +4,18 @@
 #include <limits>
 #include <xmmintrin.h>
 #include <tmmintrin.h>
+#include <cpuinfo.h>
 
 using images::Image;
 using primitives::Vector2f;
+
+bool MandelbrotProcessorCPU_SSE::available() {
+    return cpuinfo.has_sse() && cpuinfo.has_sse2() && cpuinfo.has_ssse3();
+}
+
+bool MandelbrotProcessorCPU_SSE::isAvailable() {
+    return MandelbrotProcessorCPU_SSE::available();
+}
 
 void MandelbrotProcessorCPU_SSE::process(Vector2f from, Vector2f to,
                                          Image<unsigned short>& iterations) {

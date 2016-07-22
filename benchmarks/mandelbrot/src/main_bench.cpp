@@ -43,8 +43,14 @@ int main() {
     for (size_t i = 0; i < processors.size(); i++) {
         string label = processors[i].first;
         MandelbrotProcessor& processor = processors[i].second;
-        size_t best_result = std::numeric_limits<size_t>::max();
+        std::cout << label << "\t";
 
+        if (!processor.isAvailable()) {
+            std::cout << "not available" << std::endl;
+            continue;
+        }
+
+        size_t best_result = std::numeric_limits<size_t>::max();
         for (int j = 0; j < iters_number; j++) {
             Timer timer;
 
@@ -52,8 +58,7 @@ int main() {
 
             best_result = std::min(best_result, timer.elapsed<milliseconds>());
         }
-
-        std::cout << label << "\t" << best_result << " ms" << std::endl;
+        std::cout << best_result << " ms" << std::endl;
     }
     return 0;
 }

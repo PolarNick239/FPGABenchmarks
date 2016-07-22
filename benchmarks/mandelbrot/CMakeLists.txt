@@ -15,7 +15,7 @@ set(SOURCES
 
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} cl_utils images primitives commons)
+target_link_libraries(${PROJECT_NAME} cl_utils images primitives commons cpuid)
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 

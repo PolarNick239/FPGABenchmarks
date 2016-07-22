@@ -10,6 +10,8 @@ public:
     virtual void process(primitives::Vector2f from, primitives::Vector2f to,
                          images::Image<unsigned short>& iterations) = 0;
 
+    virtual bool isAvailable() = 0;
+
 protected:
     const float INFINITY = 1000;
 };
@@ -19,6 +21,7 @@ public:
 
     virtual void process(primitives::Vector2f from, primitives::Vector2f to,
                          images::Image<unsigned short>& iterations) override;
+    virtual bool isAvailable() override;
 
 };
 
@@ -27,6 +30,8 @@ public:
 
     virtual void process(primitives::Vector2f from, primitives::Vector2f to,
                          images::Image<unsigned short>& iterations) override;
+    virtual bool isAvailable() override;
+    static bool available();
 
 };
 
@@ -35,6 +40,8 @@ public:
 
     virtual void process(primitives::Vector2f from, primitives::Vector2f to,
                          images::Image<unsigned short>& iterations) override;
+    virtual bool isAvailable() override;
+    static bool available();
 
 };
 
@@ -45,6 +52,7 @@ public:
 
     virtual void process(primitives::Vector2f from, primitives::Vector2f to,
                          images::Image<unsigned short>& iterations) override;
+    virtual bool isAvailable() override;
 
 protected:
 

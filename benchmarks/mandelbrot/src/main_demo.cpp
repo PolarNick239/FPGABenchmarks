@@ -15,7 +15,17 @@ int main() {
     ImageWindow window("Mandelbrot");
     window.display(image);
 
-    MandelbrotProcessorCPU_AVX processor;
+    std::unique_ptr<MandelbrotProcessor> processor;
+    if (MandelbrotProcessorCPU_AVX::available()) {
+        std::cout << "Using CPU AVX2 implementation..." << std::endl;
+        processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) new MandelbrotProcessorCPU_AVX());
+    } else if (MandelbrotProcessorCPU_SSE::available()) {
+        std::cout << "Using CPU SSE2+SSSE3 implementation..." << std::endl;
+        processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) new MandelbrotProcessorCPU_SSE());
+    } else {
+        std::cout << "Using CPU implementation..." << std::endl;
+        processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) new MandelbrotProcessorCPU());
+    }
 
     do {
         if (window.isResized()) {
@@ -26,7 +36,7 @@ int main() {
             window.resize();
         }
 
-        processor.process(Vector2f(-1.0f, -1.0f), Vector2f(1.0f, 1.0f), iterations);
+        processor->process(Vector2f(-1.0f, -1.0f), Vector2f(1.0f, 1.0f), iterations);
 
         for (size_t y = 0; y < height; y++) {
             for (size_t x = 0; x < width; x++) {
