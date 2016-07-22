@@ -1,3 +1,6 @@
 [submodule "thirdparty/CImg"]
 	path = thirdparty/CImg
 	url = git://github.com/dtschump/CImg.git
+[submodule "thirdparty/cpuid/cpuid"]
+	path = thirdparty/cpuid/cpuid
+	url = git://github.com/steinwurf/cpuid
