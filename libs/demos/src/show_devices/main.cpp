@@ -6,13 +6,12 @@
 
 
 int main() {
-    auto platform_ids = cl::getPlatformsIds();
-    std::cout << "Platforms number: " << platform_ids.size() << std::endl;
+    auto platforms = cl::getPlatforms();
+    std::cout << "Platforms number: " << platforms.size() << std::endl;
 
     int i = 0;
-    for (auto platform_id : platform_ids) {
-        auto platform = cl::createPlatform(platform_id);
-        std::cout << "  Platform " << i + 1 << "/" << platform_ids.size() << ":" << std::endl;
+    for (auto platform : platforms) {
+        std::cout << "  Platform " << i + 1 << "/" << platforms.size() << ":" << std::endl;
         if (platform) {
             std::cout << "    Name:       " << platform->name << std::endl;
             std::cout << "    Vendor:     " << platform->vendor << std::endl;
@@ -24,11 +23,10 @@ int main() {
             }
             std::cout << std::endl;
 
-            auto devices_ids = cl::getDevicesIds(platform);
-            for (size_t j = 0; j < devices_ids.size(); j++) {
-                auto device_id = devices_ids[j];
-                auto device = cl::createDevice(platform, device_id);
-                std::cout << "      Device " << j + 1 << "/" << devices_ids.size() << ":" << std::endl;
+            auto devices = cl::getDevices(platform);
+            for (size_t j = 0; j < devices.size(); j++) {
+                auto device = devices[j];
+                std::cout << "      Device " << j + 1 << "/" << devices.size() << ":" << std::endl;
                 if (device) {
                     std::cout << "        Name:              " << device->name << std::endl;
                     std::cout << "        Vendor:            " << device->vendor << std::endl;

@@ -13,18 +13,42 @@ int main() {
     Image<unsigned short> iterations(width, height, 1);
 
     ImageWindow window("Mandelbrot");
-    window.display(image);
 
     std::unique_ptr<MandelbrotProcessor> processor;
-    if (MandelbrotProcessorCPU_AVX::available()) {
-        std::cout << "Using CPU AVX2 implementation..." << std::endl;
-        processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) new MandelbrotProcessorCPU_AVX());
-    } else if (MandelbrotProcessorCPU_SSE::available()) {
-        std::cout << "Using CPU SSE2+SSSE3 implementation..." << std::endl;
-        processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) new MandelbrotProcessorCPU_SSE());
-    } else {
-        std::cout << "Using CPU implementation..." << std::endl;
-        processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) new MandelbrotProcessorCPU());
+    if (MandelbrotProcessorOCL::available()) {
+        std::cout << "Using OpenCL implementation..." << std::endl;
+
+        cl::Engine_ptr engine = cl::createGPUEngine();
+
+        if (engine) {
+            engine->device->printInfo();
+
+            if (engine->init()) {
+                MandelbrotProcessorOCL *ocl_processor = new MandelbrotProcessorOCL(engine);
+                if (ocl_processor->init()) {
+                    processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) ocl_processor);
+                } else {
+                    std::cout << "OpenCL implementation failed to initialize!" << std::endl;
+                }
+            } else {
+                std::cout << "Failed to initialize context and queue!" << std::endl;
+            }
+        } else {
+            std::cout << "No GPU device." << std::endl;
+        }
+    }
+
+    if (!processor) {
+        if (MandelbrotProcessorCPU_AVX::available()) {
+            std::cout << "Using CPU AVX2 implementation..." << std::endl;
+            processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) new MandelbrotProcessorCPU_AVX());
+        } else if (MandelbrotProcessorCPU_SSE::available()) {
+            std::cout << "Using CPU SSE2+SSSE3 implementation..." << std::endl;
+            processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) new MandelbrotProcessorCPU_SSE());
+        } else {
+            std::cout << "Using CPU implementation..." << std::endl;
+            processor = std::unique_ptr<MandelbrotProcessor>((MandelbrotProcessor *) new MandelbrotProcessorCPU());
+        }
     }
 
     do {

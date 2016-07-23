@@ -53,11 +53,13 @@ namespace cl {
                                                max_clock_freq(max_clock_freq), max_compute_units(max_compute_units),
                                                extensions(extensions),
                                                platform(platform), device_id(device_id) { }
+
+        void printInfo() const;
     };
 
     typedef std::shared_ptr<Device> Device_ptr;
 
-    std::vector<cl_device_id> getDevicesIds(Platform_ptr platform, DeviceType deviceTypeMask=ALL_TYPES);
+    std::vector<Device_ptr> getDevices(Platform_ptr platform, DeviceType deviceTypeMask=ALL_TYPES);
     Device_ptr createDevice(Platform_ptr platform, cl_device_id device_id);
 
 }

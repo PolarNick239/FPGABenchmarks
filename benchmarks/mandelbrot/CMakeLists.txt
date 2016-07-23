@@ -11,7 +11,11 @@ set(SOURCES
         src/mandelbrot_cpu_sse.cpp
         src/mandelbrot_cpu_avx.cpp
         src/mandelbrot_single_thread.cpp
+        src/mandelbrot_ocl/mandelbrot_cl.h
+        src/mandelbrot_ocl/mandelbrot_ocl.cpp
         )
+
+convertIntoHeader(src/mandelbrot_ocl/mandelbrot.cl src/mandelbrot_ocl/mandelbrot_cl.h mandelbrot_kernel)
 
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
 

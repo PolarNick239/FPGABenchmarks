@@ -1,5 +1,6 @@
 #pragma once
 
+#define CL_USE_DEPRECATED_OPENCL_1_2_APIS
 #include <CL/cl.h>
 
 #include <string>
@@ -30,8 +31,10 @@ namespace cl {
         }
     }
 
-    #define OK(call) (!failure(__FILE__, __LINE__, call))
+    #define OK(call) (!cl::failure(__FILE__, __LINE__, call))
     #define CHECKED(call) if (!OK(call)) throw "Fatal failure!";
+    #define CHECKED_FALSE(call) if (!OK(call)) return false;
+    #define CHECKED_NULL(call) if (!OK(call)) return nullptr;
 
     class Version {
     public:

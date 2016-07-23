@@ -8,7 +8,7 @@ using namespace cl;
 using std::string;
 using std::vector;
 
-std::vector<cl_platform_id> cl::getPlatformsIds() {
+std::vector<Platform_ptr> cl::getPlatforms() {
     cl_uint platforms_num;
     CHECKED(clGetPlatformIDs(0, NULL, &platforms_num));
 
@@ -16,7 +16,14 @@ std::vector<cl_platform_id> cl::getPlatformsIds() {
     CHECKED(clGetPlatformIDs(platforms_num, platforms_ids.data(), &platforms_num));
     platforms_ids.resize(std::min(platforms_ids.size(), size_t(platforms_num)));
 
-    return platforms_ids;
+    vector<Platform_ptr> platforms;
+    for (auto platform_id : platforms_ids) {
+        auto platform = createPlatform(platform_id);
+        if (platform) {
+            platforms.push_back(platform);
+        }
+    }
+    return platforms;
 }
 
 #define getPlatformInfoString(platform_id, param_name, result) {\

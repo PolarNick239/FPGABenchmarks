@@ -2,13 +2,11 @@
 
 #include <sstream>
 
-#define CHECKED_NULL(call) if (!OK(call)) return nullptr;
-
 using namespace cl;
 using std::vector;
 using std::string;
 
-std::vector<cl_device_id> cl::getDevicesIds(Platform_ptr platform, DeviceType deviceTypeMask) {
+std::vector<Device_ptr> cl::getDevices(Platform_ptr platform, DeviceType deviceTypeMask) {
     cl_uint devices_num;
     CHECKED(clGetDeviceIDs(platform->platform_id, deviceTypeMask, 0, NULL, &devices_num));
 
@@ -16,7 +14,14 @@ std::vector<cl_device_id> cl::getDevicesIds(Platform_ptr platform, DeviceType de
     CHECKED(clGetDeviceIDs(platform->platform_id, deviceTypeMask, devices_num, devices_ids.data(), &devices_num));
     devices_ids.resize(std::min(devices_ids.size(), size_t(devices_num)));
 
-    return devices_ids;
+    vector<Device_ptr> devices;
+    for (auto device_id : devices_ids) {
+        auto device = createDevice(platform, device_id);
+        if (device) {
+            devices.push_back(device);
+        }
+    }
+    return devices;
 }
 
 #define getDeviceInfoString(device_id, param_name, result) {\
@@ -84,4 +89,16 @@ Device_ptr cl::createDevice(Platform_ptr platform, cl_device_id device_id) {
                                  max_clock_freq, max_compute_units,
                                  platform, device_id,
                                  extensions_set));
+}
+
+void Device::printInfo() const {
+    std::cout << "Platform: " << platform->name << " " << platform->vendor << std::endl;
+    std::cout << "Device:   " << name << " " << vendor << " OpenCL " << device_version.majorVersion << "." << device_version.minorVersion;
+    if (!device_version.info.empty()) {
+        std::cout << " (" << device_version.info << ")" << std::endl;
+    } else {
+        std::cout << std::endl;
+    }
+    std::cout << "          Driver:   " << driver_version.majorVersion << "." << driver_version.minorVersion << std::endl;
+    std::cout << "          Max compute units " << max_compute_units << ", memory size " << (global_mem_size >> 20) << " MB, max frequency " << max_clock_freq << " MHz" << std::endl;
 }

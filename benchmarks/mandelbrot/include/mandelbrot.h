@@ -2,6 +2,7 @@
 
 #include "images.h"
 #include "vector2.h"
+#include "cl/Engine.h"
 
 class MandelbrotProcessor {
 public:
@@ -48,7 +49,7 @@ public:
 class MandelbrotProcessorSingleThreaded : public MandelbrotProcessor {
 public:
 
-    MandelbrotProcessorSingleThreaded(MandelbrotProcessor& processor);
+    MandelbrotProcessorSingleThreaded(std::shared_ptr<MandelbrotProcessor> processor);
 
     virtual void process(primitives::Vector2f from, primitives::Vector2f to,
                          images::Image<unsigned short>& iterations) override;
@@ -56,6 +57,32 @@ public:
 
 protected:
 
-    MandelbrotProcessor& processor;
+    std::shared_ptr<MandelbrotProcessor> processor;
+
+};
+
+class MandelbrotProcessorOCL : public MandelbrotProcessor {
+public:
+
+    static bool available();
+
+    MandelbrotProcessorOCL(const cl::Engine_ptr& engine);
+    ~MandelbrotProcessorOCL();
+
+    bool init();
+    virtual bool isAvailable() override;
+    virtual void process(primitives::Vector2f from, primitives::Vector2f to,
+                         images::Image<unsigned short>& iterations) override;
+
+protected:
+    const cl::Engine_ptr engine;
+    cl::Kernel_ptr kernel;
+
+    cl_mem  buffer;
+    size_t  buffer_width;
+    size_t  buffer_height;
+
+    bool allocate(size_t width, size_t height);
+    bool deallocate();
 
 };
