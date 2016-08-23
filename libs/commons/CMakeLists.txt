@@ -5,6 +5,7 @@ project(commons)
 set(HEADERS
         include/timer.h
         include/omp_commons.h
+        include/type_helpers.h
         )
 
 set(SOURCES
