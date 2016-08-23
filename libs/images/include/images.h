@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <cstddef>
+#include <cassert>
 
 template <typename T>
 class CImgWrapper;
@@ -45,12 +46,10 @@ namespace images {
         Image(size_t width, size_t height, size_t cn, const std::shared_ptr<T> &data=nullptr);
         Image(size_t width, size_t height, size_t cn, const std::shared_ptr<T> &data, size_t offset, ptrdiff_t stride);
         Image(const Image &image);
+        Image(const char *const filename);
 
-        T operator()(size_t row, size_t col) const;
-        T operator()(size_t row, size_t col, size_t c) const;
-        T& operator()(size_t row, size_t col);
-        T& operator()(size_t row, size_t col, size_t c);
         Image copy() const;
+        Image<T> reshape(size_t width, size_t height, size_t cn);
 
         void fill(T value);
         void fill(T value[]);
@@ -61,11 +60,33 @@ namespace images {
 
         T* ptr() { return data.get(); }
 
+        inline T& operator()(size_t row, size_t col) {
+            assert (row < height && col < width);
+            return data.get()[offset + row * stride + col * cn];
+        }
+
+        inline T& operator()(size_t row, size_t col, size_t c) {
+            assert (c >= 0 && c < cn);
+            return data.get()[offset + row * stride + col * cn + c];
+        }
+
+        inline T operator()(size_t row, size_t col) const {
+            assert (row < height && col < width);
+            return data.get()[offset + row * stride + col * cn];
+        }
+
+        inline T operator()(size_t row, size_t col, size_t c) const {
+            assert (c >= 0 && c < cn);
+            return data.get()[offset + row * stride + col * cn + c];
+        }
+
     protected:
         size_t offset;
         ptrdiff_t stride;
 
         std::shared_ptr<T> data;
+
+        void allocateData();
     };
 
 }

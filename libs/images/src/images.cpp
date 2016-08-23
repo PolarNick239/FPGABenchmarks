@@ -15,52 +15,59 @@ template <typename T>
 Image<T>::Image(size_t width, size_t height, size_t cn, const std::shared_ptr<T> &data, size_t offset, ptrdiff_t stride)
         : width(width), height(height), cn(cn), offset(offset), stride(stride), data(data) {
     if (!this->data) {
-        this->data = std::shared_ptr<T>(new T[width * height * cn]);
+        allocateData();
     }
+}
+
+template <typename T>
+void Image<T>::allocateData() {
+    this->data = std::shared_ptr<T>(new T[width * height * cn]);
 }
 
 template <typename T>
 Image<T>::Image(const Image &that) : width(that.width), height(that.height), cn(that.cn), offset(that.offset), stride(that.stride), data(that.data) {}
 
 template <typename T>
+Image<T>::Image(const char *const filename) {
+    CImg<T> img(filename);
+
+    width = img.width();
+    height = img.height();
+    cn = img.spectrum();
+    offset = 0;
+    stride = width * cn;
+    allocateData();
+
+    T* src = img.data();
+    for (size_t c = 0; c < cn; c++) {
+        T* dst = this->ptr() + c;
+        for (size_t y = 0; y < height; y++) {
+            for (size_t x = 0; x < width; x++) {
+                *dst = *src;
+                ++src;
+                dst += cn;
+            }
+        }
+    }
+}
+
+template <typename T>
 Image<T> Image<T>::copy() const {
-    Image result(width, height, cn);
+    Image<T> result(width, height, cn);
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
-            result(y, x) = this->operator()(y, x);
+            for (size_t c = 0; c < cn; c++) {
+               result(y, x, c) = this->operator()(y, x, c);
+            }
         }
     }
     return result;
 }
 
-template <typename T>
-T& Image<T>::operator()(size_t row, size_t col) {
-    // TODO: check that maybe if inlined in header - performance is better
-    assert (row < height);
-    assert (col < width);
-    return data.get()[offset + row * stride + col * cn];
-}
-
-template <typename T>
-T& Image<T>::operator()(size_t row, size_t col, size_t c) {
-    // TODO: check that maybe if inlined in header - performance is better
-    assert (c >= 0 && c < cn);
-    return data.get()[offset + row * stride + col * cn + c];
-}
-
-template <typename T>
-T Image<T>::operator()(size_t row, size_t col) const {
-    // TODO: check that maybe if inlined in header - performance is better
-    assert (row < height);
-    assert (col < width);
-    return data.get()[offset + row * stride + col * cn];
-}
-
-template <typename T>
-T Image<T>::operator()(size_t row, size_t col, size_t c) const {
-    // TODO: check that maybe if inlined in header - performance is better
-    assert (c >= 0 && c < cn);
-    return data.get()[offset + row * stride + col * cn + c];
+template<typename T>
+Image<T> Image<T>::reshape(size_t width, size_t height, size_t cn) {
+    assert (this->width * this->height * this->cn == width * height * cn);
+    return Image<T>(width, height, cn, this->data, this->offset, this->stride);
 }
 
 template <typename T>
@@ -207,5 +214,7 @@ size_t ImageWindow::height() {
 
 template void ImageWindow::display<unsigned char>(Image<unsigned char> image);
 template void ImageWindow::display<unsigned short>(Image<unsigned short> image);
+template void ImageWindow::display<float>(Image<float> image);
 template class Image<unsigned char>;
 template class Image<unsigned short>;
+template class Image<float>;
