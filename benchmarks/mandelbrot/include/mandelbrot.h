@@ -14,7 +14,7 @@ public:
     virtual bool isAvailable() = 0;
 
 protected:
-    const float INFINITY = 2.0f;
+    const float INFINITY = 4.0f;
 };
 
 class MandelbrotProcessorCPU : public MandelbrotProcessor {
