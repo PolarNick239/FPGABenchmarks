@@ -60,13 +60,22 @@ int main() {
             window.resize();
         }
 
-        processor->process(Vector2f(-1.0f, -1.0f), Vector2f(1.0f, 1.0f), iterations);
+        float worldWidth = 2.0f;
+        float worldHeight = 2.3f;
+        if (worldWidth / image.width < worldHeight / image.height) {
+            worldWidth = image.width * worldHeight / image.height;
+        } else {
+            worldHeight = image.height * worldWidth / image.width;
+        }
+        processor->process(Vector2f(-0.5f - worldWidth / 2.0f, -worldHeight / 2.0f),
+                           Vector2f(-0.5f + worldWidth / 2.0f, worldHeight / 2.0f), iterations);
 
         for (size_t y = 0; y < height; y++) {
             for (size_t x = 0; x < width; x++) {
-                for (size_t c = 0; c < 3; c++) {
-                    image(y, x, c) = (unsigned char) (255 * (((float) iterations(y, x, 0)) / MandelbrotProcessor::MAX_ITERATIONS));
-                }
+                float intensity = ((float) iterations(y, x, 0)) / MandelbrotProcessor::MAX_ITERATIONS;
+                image(y, x, 0) = 173.0f * intensity;
+                image(y, x, 1) = 12.0f + 189.0f * intensity;
+                image(y, x, 2) = 173.0f * intensity;
             }
         }
 
