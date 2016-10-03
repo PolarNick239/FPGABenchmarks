@@ -5,7 +5,7 @@ project(fpga_playground)
 find_package(OpenMP REQUIRED)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
-    set(CMAKE_BUILD_TYPE RELEASE)
+    set(CMAKE_BUILD_TYPE RELWITHDEBINFO)
 endif()
 
 message("Build type: ${CMAKE_BUILD_TYPE}")
