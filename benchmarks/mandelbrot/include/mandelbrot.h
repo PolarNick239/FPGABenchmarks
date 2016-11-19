@@ -23,7 +23,6 @@ public:
     virtual void process(primitives::Vector2f from, primitives::Vector2f to,
                          images::Image<unsigned short>& iterations) override;
     virtual bool isAvailable() override;
-
 };
 
 class MandelbrotProcessorCPU_SSE : public MandelbrotProcessor {
@@ -33,7 +32,6 @@ public:
                          images::Image<unsigned short>& iterations) override;
     virtual bool isAvailable() override;
     static bool available();
-
 };
 
 class MandelbrotProcessorCPU_AVX : public MandelbrotProcessor {
@@ -43,7 +41,6 @@ public:
                          images::Image<unsigned short>& iterations) override;
     virtual bool isAvailable() override;
     static bool available();
-
 };
 
 class MandelbrotProcessorSingleThreaded : public MandelbrotProcessor {
@@ -58,7 +55,24 @@ public:
 protected:
 
     std::shared_ptr<MandelbrotProcessor> processor;
+};
 
+class MandelbrotProcessorISPC_SSE : public MandelbrotProcessor {
+public:
+
+    virtual void process(primitives::Vector2f from, primitives::Vector2f to,
+                         images::Image<unsigned short>& iterations) override;
+    virtual bool isAvailable() override;
+    static bool available();
+};
+
+class MandelbrotProcessorISPC_AVX : public MandelbrotProcessor {
+public:
+
+    virtual void process(primitives::Vector2f from, primitives::Vector2f to,
+                         images::Image<unsigned short>& iterations) override;
+    virtual bool isAvailable() override;
+    static bool available();
 };
 
 class MandelbrotProcessorOCL : public MandelbrotProcessor {
@@ -84,5 +98,4 @@ protected:
 
     bool allocate(size_t width, size_t height);
     bool deallocate();
-
 };

@@ -7,14 +7,19 @@ using std::vector;
 using std::string;
 
 std::vector<Device_ptr> cl::getDevices(Platform_ptr platform, DeviceType deviceTypeMask) {
+    vector<Device_ptr> devices;
+
     cl_uint devices_num;
-    CHECKED(clGetDeviceIDs(platform->platform_id, deviceTypeMask, 0, NULL, &devices_num));
+    cl_int code = clGetDeviceIDs(platform->platform_id, deviceTypeMask, 0, NULL, &devices_num);
+    if (code == CL_DEVICE_NOT_FOUND) {
+        return devices;
+    }
+    CHECKED(code);
 
     vector<cl_device_id> devices_ids(devices_num);
     CHECKED(clGetDeviceIDs(platform->platform_id, deviceTypeMask, devices_num, devices_ids.data(), &devices_num));
     devices_ids.resize(std::min(devices_ids.size(), size_t(devices_num)));
 
-    vector<Device_ptr> devices;
     for (auto device_id : devices_ids) {
         auto device = createDevice(platform, device_id);
         if (device) {

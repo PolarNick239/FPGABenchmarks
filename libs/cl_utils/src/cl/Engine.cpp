@@ -120,5 +120,9 @@ Engine_ptr cl::createGPUEngine() {
             }
         }
     }
-    return Engine_ptr(new Engine(best_device));
+    if (best_device) {
+        return Engine_ptr(new Engine(best_device));
+    } else {
+        return Engine_ptr();
+    }
 }

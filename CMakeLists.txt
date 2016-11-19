@@ -8,6 +8,28 @@ if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE RELEASE)
 endif()
 
+if(DEFINED INTEL_SPMD_COMPILER)
+    set(SPMD_SUPPORT TRUE)
+    set(ISPCFLAGS "-O2")
+
+    function(spmdCompile sourceFile generatedDirectory kernelName targetName target)
+        add_custom_command (
+                OUTPUT
+                ${PROJECT_SOURCE_DIR}/${generatedDirectory}/${kernelName}_${targetName}.ispc ${PROJECT_SOURCE_DIR}/${generatedDirectory}/${kernelName}_${targetName}.h ${PROJECT_SOURCE_DIR}/${generatedDirectory}/${kernelName}_${targetName}.o
+
+                COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/${generatedDirectory}
+                COMMAND cat ${PROJECT_SOURCE_DIR}/${sourceFile} | sed -e 's/${kernelName}/${kernelName}_${targetName}/g' > ${PROJECT_SOURCE_DIR}/${generatedDirectory}/${kernelName}_${targetName}.ispc
+                COMMAND ${INTEL_SPMD_COMPILER} ${ISPCFLAGS} --target=${target} ${PROJECT_SOURCE_DIR}/${generatedDirectory}/${kernelName}_${targetName}.ispc -o ${PROJECT_SOURCE_DIR}/${generatedDirectory}/${kernelName}_${targetName}.o -h ${PROJECT_SOURCE_DIR}/${generatedDirectory}/${kernelName}_${targetName}.h
+
+                DEPENDS
+                ${sourceFile}
+        )
+    endfunction()
+else()
+    message(WARNING "Intel SPMD not used: INTEL_SPMD_COMPILER was not configured! You can download compiler here - http://ispc.github.io/downloads.html and then set INTEL_SPMD_COMPILER to .../ispc")
+    set(SPMD_SUPPORT FALSE)
+endif()
+
 message("Build type: ${CMAKE_BUILD_TYPE}")
 
 if(CMAKE_COMPILER_IS_GNUCXX)

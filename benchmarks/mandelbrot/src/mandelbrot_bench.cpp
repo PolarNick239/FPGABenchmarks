@@ -34,6 +34,9 @@ int main() {
     shared_ptr<MandelbrotProcessor> cpu(new MandelbrotProcessorCPU());
     shared_ptr<MandelbrotProcessor> cpu_single(new MandelbrotProcessorSingleThreaded(cpu));
 
+    shared_ptr<MandelbrotProcessor> cpu_ispc_sse(new MandelbrotProcessorISPC_SSE());
+    shared_ptr<MandelbrotProcessor> cpu_ispc_avx(new MandelbrotProcessorISPC_AVX());
+
     auto platforms = cl::getPlatforms();
     for (auto platform : platforms) {
         auto devices = cl::getDevices(platform);
@@ -50,12 +53,15 @@ int main() {
         }
     }
 
-    processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("CPU AVX2\t") + threads_suffix, cpu_avx));
-    processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("CPU AVX2\t") + single_thread_suffix, cpu_avx_single));
+    processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("CPU AVX \t") + threads_suffix, cpu_avx));
+    processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("CPU AVX \t") + single_thread_suffix, cpu_avx_single));
     processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("CPU SSE \t") + threads_suffix, cpu_sse));
     processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("CPU SSE \t") + single_thread_suffix, cpu_sse_single));
     processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("CPU     \t") + threads_suffix, cpu));
     processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("CPU     \t") + single_thread_suffix, cpu_single));
+
+    processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("ISPC SSE\t") + single_thread_suffix, cpu_ispc_sse));
+    processors.push_back(pair<string, shared_ptr<MandelbrotProcessor>>(string("ISPC AVX\t") + single_thread_suffix, cpu_ispc_avx));
 
     for (size_t i = 0; i < processors.size(); i++) {
         string label = processors[i].first;
