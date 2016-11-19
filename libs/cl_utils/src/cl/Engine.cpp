@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+static const bool VERBOSE_COMPILATION_LOG = false;
+
 using namespace cl;
 
 void CL_CALLBACK context_error_notify(const char *errinfo, const void *private_info, size_t cb, void *user_data) {
@@ -51,13 +53,18 @@ bool Engine::compile(const char* source, size_t length, cl_program& program, con
     cl_program new_program = clCreateProgramWithSource(context, 1, &source, &length, &error_code);
     CHECKED_FALSE(error_code);
     error_code = clBuildProgram(new_program, 1, &device->device_id, options, NULL, NULL);
-    if (error_code == CL_BUILD_PROGRAM_FAILURE) {
+
+    if (error_code == CL_BUILD_PROGRAM_FAILURE || VERBOSE_COMPILATION_LOG) {
         size_t log_size;
         clGetProgramBuildInfo(new_program, device->device_id, CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
         std::string log;
         log.resize(log_size, ' ');
         clGetProgramBuildInfo(new_program, device->device_id, CL_PROGRAM_BUILD_LOG, log_size, (void *) log.data(), &log_size);
-        std::cerr << "Program building failed:\n" << log << std::endl;
+        std::cout << "Log:" << std::endl << log << std::endl;
+    }
+
+    if (error_code == CL_BUILD_PROGRAM_FAILURE) {
+        std::cerr << "Program building failed!\n" << std::endl;
     } else {
         CHECKED_FALSE(error_code);
     }
